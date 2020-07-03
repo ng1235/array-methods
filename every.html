@@ -1,0 +1,73 @@
+<script src="../tinytest.js"></script>
+<script>
+
+function every(array, callback, optionalThis) {
+  let checker = 0;
+  let everyCallback = callback;
+
+  if (optionalThis) {
+    everyCallback = callback.bind(optionalThis);
+  }
+
+  for (let i = 0; i < array.length; i++) {
+    if (everyCallback(array[i], i, array)) {
+      checker++;
+    };
+  }
+  return checker === array.length ? true : false;
+}
+
+
+tests ({
+  'It should run the callback array.length times ': function() {
+    let numberOfTimesCallbackRun = 0;
+    every([1,2,3], function() {
+      numberOfTimesCallbackRun ++;
+    });
+    eq(numberOfTimesCallbackRun, 3);
+  },
+
+  'It should pass the ith element as the first argument to the callback ': function () {
+    every([5], function(number) {
+      eq(number, 5);
+    })
+  },
+
+  'It should pass the ith position as the second argument to the callback ': function() {
+    every([1], function(number, index) {
+      eq(index, 0);
+    });
+  },
+
+  'It should pass in the original array as the third argument to the callback ': function() {
+    let testArray = [1,2,3];
+    every(testArray, function(number, index, originalArray) {
+      eq(testArray, originalArray);  
+    })
+
+  },
+
+  'It should accept an optional this argument ': function() {
+    every([1], function() {
+      eq(this.description, "I should be accessible inside of the callback");
+    }, { description: "I should be accessible inside of the callback"})
+  },
+
+  'It should return true if all elements in the array pass the test implemented by the callback ': function() {
+    let belowFive = every([1,2,3], function(number) {
+      return number < 5;
+    })
+    eq(belowFive, true);
+  },
+
+  'It should return false if any element in the array fails the test implemented by the callback ': function () {
+    let aboveFive = every([1,2,6], function(number) {
+      return number > 5;
+    });
+    eq(aboveFive, false);
+  }
+});
+
+
+
+</script>

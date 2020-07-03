@@ -1,0 +1,69 @@
+<script src="../tinytest.js"></script>
+<script>
+
+function some(array, callback, optionalThis) {
+  let someCallback = callback;
+  
+  if (optionalThis) {
+    someCallback = callback.bind(optionalThis);
+  }
+
+  for (let i = 0; i < array.length; i++) {
+    if (someCallback(array[i], i, array)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+tests ({
+  'It should run the callback array.length times ': function() {
+    let numberOfTimesCallbackRun = 0;
+    some([1,2,3,4,5], function() {
+      numberOfTimesCallbackRun++;
+    });
+    eq(numberOfTimesCallbackRun, 5);
+  },
+
+  'It should pass the ith element as the first argument into the callback ': function() {
+    some([5], function(number) {
+      eq(number, 5);
+    })
+  },
+
+  'It should pass the ith position as the second argument to the callback ': function() {
+    some([1], function(number, position) {
+      eq(position, 0);
+    });
+  },
+
+  'It should pass the original array as the third argument to the callback ': function() {
+    let testArray = [1,2,3];
+    some(testArray, function(number, position, originalArray) {
+      eq(testArray, originalArray);
+    });
+  },
+
+  'It should accept an optional this argument ': function() {
+    some([1,2,3], function() {
+      eq(this.description, "I should be accessible inside of the callback");
+    }, {description: "I should be accessible inside of the callback"});
+  },
+
+  'It should return true if at least one of the elements in the array passes the test implemented by the callback ': function() {
+    let aboveFive = some([1,2,6], function(number) {
+      return number > 5;
+    });
+    eq(aboveFive, true);
+  },
+
+  'It should return false if no elements in the array pass the test implemented by the callback': function() {
+    let belowSeven = some([8,9,10], function(number) {
+      return number < 7;
+    });
+    eq(belowSeven, false);
+  }
+});
+
+</script>
