@@ -1,0 +1,158 @@
+<script src="../tinytest.js"></script>
+
+<script>
+
+// Objective
+  // Merge two or more arrays
+
+// Prototype Implementation
+  // function concat(oldArray, arrayToJoin (...args?), valuesToAdd) {
+      // let newArray = [];
+      // for (let i = 0; i < oldArray.length; i++) {
+          // newArray.push(oldArray[i]);
+      // }
+
+      // for (let i = 0; i < arrayToJoin; i++) {
+        // newArray.push(arrayToJoin[i])
+      // }
+      // return newArray
+  // }
+
+// Example
+  // const letters = ['a', 'b', 'c'];
+  // const numbers = [1, 2, 3];
+
+  // letters.concat(numbers);
+  // result in ['a', 'b', 'c', 1, 2, 3]
+
+// Function Signature
+  // concat(oldArray, arrayToJoin, valuesToAdd)
+
+// Return Value
+  // Returns a new array instance
+
+// Requirements:
+
+// It creates a new array 
+// The new array consists of the elements in the object on which it is called
+// If arrayToJoin is an array, elements of that array are added to the new array in order
+// If arrayToJoin is not an array, that argument is added to the newArray
+// If valuesToAdd is an array, elements of that array are added to the new array in order
+// If valuesToAdd is not an array, that argument is added to the newArray
+// if oldArray is changed, this also changes newArray
+
+function concat(oldArray, ...argumentsToConcat) {
+  let newArray = oldArray;
+  let originalArguments = argumentsToConcat;
+  let arrayToJoin = [];
+
+  // Add ... arrays to the newArray
+  for (let arr in argumentsToConcat) {
+    let index = parseInt(arr);
+
+    // If the argument is a single element, add it to newArray
+    if (typeof(originalArguments[index]) === 'number') {
+      newArray.push(originalArguments[index]);
+    } else {
+      // If the argument is an array, add all elements to newArray
+      for (let i = 0; i < originalArguments[index].length; i++) {
+          newArray.push(originalArguments[index][i]);
+      }
+    }
+  }
+  return newArray
+};
+
+// Check if arrays are equal
+function areArraysEqual (arrayOne, arrayTwo) {
+  let equalElements = 0;
+
+  if (arguments.length < 2) {
+    return false;
+  }
+
+  if (arrayOne.length !== arrayTwo.length) {
+    return false
+  }
+
+  // If the element in the array is a nested array, recursively determine if the nested arrays are equal
+  for (let i = 0; i < arrayOne.length; i++) {
+    if (arrayOne[i].constructor === Array) {
+      if (areArraysEqual(arrayOne[i], arrayTwo[i])) {
+        equalElements++;
+      }
+    }
+    
+    // If the element in the array is a number, check that the value is equal in both arrays
+    if (arrayOne[i] === arrayTwo[i]) {
+      equalElements++;
+    } 
+  }
+
+  return equalElements === arrayOne.length ? true : false;
+};
+
+tests ({
+  'If arrayToJoin is an array, elements of that array are added to the newArray in order': function() {
+    // debugger;
+    let testArray = [1,2,3,4,5,6];
+    let newArray = concat([1,2,3], [4,5,6]);
+    let equalArrays = areArraysEqual(testArray, newArray);
+    eq(equalArrays, true);
+  },
+
+  'It should concat multiple arrays': function() {
+    // debugger;
+    let testArray = [1,2,3,4,5,6,7,8,9];
+    let newArray = concat([1,2,3], [4,5,6], [7,8,9]);
+    let equalArrays = areArraysEqual(testArray, newArray);
+    eq(equalArrays, true);
+  },
+
+  'If arrayToJoin is not an array, that argument is added to the newArray': function() {
+    // debugger;
+    let testArray = ['a', 'b', 'c', 1, 2, 3];
+    let newArray = concat(['a','b','c', 1, 2], 3);
+    let equalArrays = areArraysEqual(testArray, newArray);
+    eq(equalArrays, true);
+  },
+
+  'It should concat multiple arguments with single elements': function() {
+    // debugger;
+    let testArray = ['a', 'b', 'c', 1, 2, 3, 4];
+    let newArray = concat(['a','b','c', 1, 2], 3, 4);
+    let equalArrays = areArraysEqual(testArray, newArray);
+    eq(equalArrays, true);
+  },
+
+  'It should concat multiple arguments of either arrays or primitives': function() {
+    let testArray = ['a', 3, 4, 5];
+    let newArray = concat(['a'], 3, [4,5]);
+    let equalArrays = areArraysEqual(testArray, newArray);
+    eq(equalArrays, true);
+  },
+
+  'It should concatenate nested arrays': function() {
+    // debugger;
+    let testArray = [[1], 2, [3]]
+    let newArray = concat([[1]], [2, [3]]);
+    let equalArrays = areArraysEqual(testArray, newArray);
+    eq(equalArrays, true);
+  },
+
+  'If oldArray is changed, this changes newArray': function() {
+    // debugger;
+    let testArray = [[1], 2, [3]];
+    const num1 = [[1]];
+    const num2 = [2, [3]];
+    let newArray = concat(num1, num2);
+    let equalArrays = areArraysEqual(testArray, newArray);
+    eq(equalArrays, true);
+    num1[0].push(4);
+    let secondTestArray = [[1, 4], 2, [3]];
+    let secondNewArray = concat(num1, num2);
+    let secondequalArrays = areArraysEqual(secondTestArray, secondNewArray);
+    eq(equalArrays, true);
+  },
+})
+</script>
