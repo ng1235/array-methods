@@ -1,0 +1,113 @@
+<script src="../tinytest.js"></script>
+<script>
+
+// Prototype Implementation
+  // function includes(elementToFind, arrayToSearch, startingIndex) {
+    // for (let i = startingIndex; i >= 0; i--) {
+    //   if (elementToFind === arrayToSearch[i]) {
+    //     return true;
+    //   }
+    // }
+    // return -1
+  // }
+
+// Example
+  // const array1 = [1, 2, 3];
+
+  // console.log(array1.includes(2));
+  // expected output: true
+
+  // const pets = ['cat', 'dog', 'bat'];
+  // console.log(pets.includes('cat'));
+  // expected output: true
+
+
+// Function Signature
+  // includes(elementToFind, array, startingIndex)
+
+// Return Value
+  // Return true if valueToFind is in array
+
+// Requirements:
+  // It returns true if an element is found in the array
+  // It returns false is an element is not found in the array
+  // If startingValue, iteration begins at startingValue
+  // It returns -1 if startingValue > arrayToSearch.length
+  // If no startingValue, iteration begins at array[0]
+  // If startingValue is negative, iteration begins at array + startingValue, (using the absolute value of fromIndex as the number of characters from the end of the array at which to start the search).
+  // If startingIndex, the iteration begins at array[startingIndex]
+  // If startingIndex > array length, it returns false 
+
+function includes(elementToFind, arrayToSearch, startingIndex) {
+  let computedIndex = startingIndex + arrayToSearch.length;
+  let negativeArrayLength = -1 * arrayToSearch.length;
+
+  // Search whole array if the negative index is less than -1*(array.length) - see MDN documentation
+  if (startingIndex < 0 && computedIndex <= negativeArrayLength) {
+    startingIndex = 0;
+    // Apply the following logic from MDN documentation: The first character to be searched is found at fromIndex for positive values of fromIndex, or at arr.length + fromIndex for negative values of fromIndex
+  } else if (startingIndex < 0 && computedIndex >= negativeArrayLength) {
+    startingIndex = arrayToSearch.length + startingIndex;
+  }
+
+  if (arguments.length !== 3) {
+    startingIndex = 0;
+  }
+
+  for (let i = startingIndex; i < arrayToSearch.length; i++) {
+    // Account for NaN elements
+    if (Number.isNaN(elementToFind) && Number.isNaN(arrayToSearch[i])) {
+      return true;
+    }
+
+    if (elementToFind === arrayToSearch[i]) {
+      return true;
+    }
+  }
+  return false;
+};
+
+tests ({
+  'It returns true if elementToFind is in arrayToSearch': function() {
+    let testResult = includes(1, [1,2]);
+    eq(testResult, true);
+  },
+
+  'It returns false if elementToFind is not in arrayToSearch': function() {
+    let testResult = includes(0, [1,2]);
+    eq(testResult, false);
+  },
+
+  'It returns false if startingValue > arrayToSearch.length.': function() {
+    let testResult = includes(0, [1,2], 5);
+    eq(testResult, false);
+  },
+
+  'If no startingIndex, iteration begins at arrayToSearch[0].': function() {
+    let testResult = includes(0, [0,1]);
+    eq(testResult, true);
+  },
+
+  'If startingIndex, iteration begins at arrayToSearch[startingIndex].': function() {
+    let testResult = includes(0, [0,1], 1);
+    eq(testResult, false);
+  },
+
+  'If startingIndex is negative and greater than -1 * arrayToSearch.length, iteration begins at arrayToSearch[0].': function() {
+    // debugger;
+    let testResult = includes('a', ['a','b','c'], -100); // MDN documentation
+    eq(testResult, true);
+  },
+
+  'If startingIndex is negative and not greater than -(arrayToSearch.length), iteration begins at arrayToSearch + startingValue.': function() {
+    // debugger;
+    let testResult = includes('a', ['a','b','c'], -2); // MDN documentation
+    eq(testResult, false);
+  },
+
+  'It tests for equality for NaN elements.': function() {
+    let testResult = includes(NaN, [1,2,NaN]); // MDN documentation
+    eq(testResult, true);
+  },
+});
+</script>
