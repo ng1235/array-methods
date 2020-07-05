@@ -1,0 +1,84 @@
+<script src="../tinytest.js"></script>
+<script>
+
+// Prototype Implementation
+  // function indexOf(elementToFind, arrayToSearch, startingIndex) {
+    // for (let i = 0; i < arrayToSearch.length; i++) {
+    //   if (elementToFind === arrayToSearch[i]) {
+    //     return i;
+    //   }
+    // }
+    // return -1
+  // }
+
+// Example
+  // const beasts = ['ant', 'bison', 'camel', 'duck', 'bison'];
+  // console.log(beasts.indexOf('bison'));
+  // letters.concat(numbers);
+  // expected output: 1
+
+  // start from index 2
+  // console.log(beasts.indexOf('bison', 2));
+  // expected output: 4
+
+// Function Signature
+  // indexOf(searchElement, fromIndex)
+
+// Return Value
+  // Return index at which a given element can be found in the array, or -1 if not the element is not in the array
+
+// Requirements:
+  // If startingIndex is not provided, the iteration begins at the first array element
+  // If startingIndex is provided, the iteration begins at the startingIndex
+  // If startingIndex is greater than the array length, it returns -1 
+  // It returns the array index if the element is found
+  // If the element is not found, it returns -1
+
+function indexOf(elementToFind, arrayToSearch, startingIndex) {
+  // No startingIndex provided
+  if (arguments.length < 3) {
+    startingIndex = 0;
+  }
+
+  if (startingIndex > arrayToSearch.length - 1) {
+    return -1;
+  }
+
+  for (let i = startingIndex; i < arrayToSearch.length; i++) {
+    if (elementToFind === arrayToSearch[i]) {
+      return i;
+    }
+  }
+  // Return - 1 if element is not found
+  return -1;
+}
+
+
+tests ({
+  'The iteration begins at the first array element if startingIndex is not provided.': function() {
+    let testIndex = indexOf(0, [0,1]);
+    eq(testIndex, 0);
+  },
+
+  'The iteration begins at startingIndex if startingIndex is provided.': function() {
+    let testIndex = indexOf(0, [0,0], 1);
+    eq(testIndex, 1);
+  },
+
+  'It returns -1 if startingIndex is greater than the array length.': function() {
+    let testIndex = indexOf(0, [0,0], 2);
+    eq(testIndex, -1);
+  },
+
+  'It returns the array index if the element is found.': function() {
+    let testIndex = indexOf(1, [0,0,1]);
+    eq(testIndex, 2);
+  },
+
+  'It returns -1 if the element is not found.': function() {
+    let testIndex = indexOf(3, [0,1,2]);
+    eq(testIndex, -1);
+  },
+})
+
+</script>
