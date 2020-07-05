@@ -1,0 +1,181 @@
+<script src="../tinytest.js"></script>
+
+<script>
+
+// Prototype Implementation
+  // function slice(array, startingIndex, endingIndex) {
+    // let newArray = [];
+    // for (let i = startingIndex; i  < endingIndex; i++) {
+    //    newArray.push(array[i]);
+    // }
+    // return newArray
+  // }
+
+// Example
+  // const animals = ['ant', 'bison', 'camel', 'duck', 'elephant'];
+
+  // console.log(animals.slice(2));
+  // expected output: Array ["camel", "duck", "elephant"]
+
+  // console.log(animals.slice(2, 4));
+  // expected output: Array ["camel", "duck"]
+
+  // console.log(animals.slice(1, 5));
+  // expected output: Array ["bison", "camel", "duck", "elephant"
+
+// Function Signature
+  // slice(array, startIndex, endIndex)
+
+// Return Value
+  // Return a new array containing the extracted elements
+
+// Requirements:
+  // If startingIndex, slice begins at array[startingIndex]
+  // It returns an empty array if startingIndex > array.length 
+  // If no startingIndex, slice starts from array[0];
+  // If endIndex, slice ends at endIndex - 1
+  // If endIndex < 0, it extracts from array.length + endIndex (i.e. endIndex acts as an offset from the end of the array)
+  // It extracts through to the end of the array if endIndex > array.length
+  // If no endIndex, slice ends at array.length
+  // It returns a new array containing the extracted elements
+  // It does not alter array
+  // If a referenced object changes,the changes are visible to both new and original arrays
+  // If a new element is added to either array, the other array is not affected
+
+function slice(array, startIndex, endIndex) {
+  if (!startIndex) {
+    startIndex = 0;
+  }
+
+  if (!endIndex) {
+    endIndex = array.length
+  }
+
+  if (endIndex > array.length) {
+    endIndex = array.length;
+  }
+
+  // Offset endIndex from the end of the array - as per MDN documentation
+  if (endIndex < 0) {
+    endIndex = array.length + endIndex;
+  }
+  
+  let newArray = [];
+  for (let i = startIndex; i  < endIndex; i++) {
+      newArray.push(array[i]);
+  }
+  return newArray
+};
+
+// Check if arrays are equal
+function areArraysEqual (arrayOne, arrayTwo) {
+  let equalElements = 0;
+
+  if (arguments.length < 2) {
+    return false;
+  }
+
+  if (arrayOne.length !== arrayTwo.length) {
+    return false
+  }
+
+  // If the element in the array is a nested array, recursively determine if the nested arrays are equal
+  for (let i = 0; i < arrayOne.length; i++) {
+    if (arrayOne[i].constructor === Array) {
+      if (areArraysEqual(arrayOne[i], arrayTwo[i])) {
+        equalElements++;
+      }
+    }
+    
+    // If the element in the array is a number, check that the value is equal in both arrays
+    if (arrayOne[i] === arrayTwo[i]) {
+      equalElements++;
+    } 
+  }
+  return equalElements === arrayOne.length ? true : false;
+};
+
+tests ({
+  'If startingIndex, slice begins at array[startingIndex]': function() {
+    let testArray = slice([1,2], 1, 2);
+    eq(testArray, 2)
+  },
+
+  'It returns an empty array if startingIndex > array.length': function() {
+    let testArray = slice([1,2], 3, 2);
+    eq(Array.isArray(testArray), true);
+    eq(testArray, "")
+  },
+
+  'If endIndex, slice ends at endIndex - 1': function() {
+    let testArray = slice([1,2,3,4], 0, 3);
+    let testResult = areArraysEqual(testArray, [1,2,3])
+    eq(testResult, true);
+  },
+
+  'It extracts through to the end of the array if endIndex > array.length': function() {
+    // debugger;
+    let testArray = slice([1,2,3,4], 0, 5);
+    let testResult = areArraysEqual(testArray, [1,2,3,4])
+    eq(testResult, true);
+  },
+
+  'If endIndex < 0, it extracts from array.length + endIndex (i.e. endIndex acts as an offset from the end of the array)': function() {
+    // debugger;
+    let testArray = slice([1,2,3,4], 0, -2);
+    let testResult = areArraysEqual(testArray, [1,2])
+    eq(testResult, true);
+  },
+
+  'If no startingIndex, slice starts from array[0]': function() {
+    // debugger;
+    let testArray = slice([1,2], null, 3);
+    let testResult = areArraysEqual(testArray, [1,2])
+    eq(testResult, true);
+  },
+
+  'If no endIndex, slice ends at array.length': function() {
+    let testArray = slice([1,2], 0);
+    let testResult = areArraysEqual(testArray, [1,2])
+    eq(testResult, true);
+  },
+
+  'It returns a new array containing the extracted elements': function() {
+    let testArray = slice([1,2], 0, 3);
+    let testResult = areArraysEqual(testArray, [1,2]);
+    eq(testResult, true);
+  },
+
+  'It does not alter array': function() {
+    // debugger;
+    let arrayToTest = [1,2,3];
+    let testArray = slice(arrayToTest, 0, 2);
+    let testResult = areArraysEqual(testArray, [1, 2]);
+    let secondTestResult = areArraysEqual(arrayToTest, [1,2,3]) 
+    eq(testResult, true);
+    eq(secondTestResult, true);
+    
+  },
+
+  'If a referenced object changes, changes to an object are visible to both new and original arrays': function() {
+    let person = {
+      name: "Matt"
+    };
+    let testArray = slice([person,1], 0, 2);
+    let testResult = areArraysEqual(testArray, [person, 1]);
+    person.name = "Liv";
+    let arraysEqualAfterObjectChange = areArraysEqual(testArray, [person, 1])
+    eq(testResult, true);
+    eq(arraysEqualAfterObjectChange, true);
+  },
+
+  'If a new element is added to either array, the other array is not affected': function() {
+    // debugger;
+    let array = [1,2,3];
+    let testArray = slice(array, 0, 3);
+    array.push(4);
+    let testResult = areArraysEqual(testArray, array)
+    eq(testResult, false);
+  },
+});
+</script>
