@@ -1,0 +1,80 @@
+<script src="../tinytest.js"></script>
+
+<script>
+
+// Prototype Implementation
+  // function push(array, ...elements) {
+    // let length = array.length;
+    // for el in elements:
+      // Add el to array[length]
+      // length++;
+    // return array.length
+  // }
+
+// Example
+  // const animals = ['pigs', 'goats', 'sheep'];
+
+  // const count = animals.push('cows');
+  // console.log(count);
+  // expected output: 4
+  // console.log(animals);
+  // expected output: Array ["pigs", "goats", "sheep", "cows"]
+
+  // animals.push('chickens', 'cats', 'dogs');
+  // console.log(animals);
+  // expected output: Array ["pigs", "goats", "sheep", "cows", "chickens", "cats", "dogs"]
+
+// Function Signature
+  // push(array, ...elements)
+
+// Return Value
+  // array.length
+
+// Requirements:
+  // It adds one element to the original array passed in
+  // It adds multiple elements to the original array passed in
+  // It returns the new length of the original array passed in
+
+
+function push(array, ...elements) {
+  let length = array.length;
+  for (let el in elements) {
+
+    if (typeof(elements[el]) === 'number') {
+      array[length] = elements[el];
+      length++;
+    } else {
+      for (let i = 0; i < elements[el].length; i++) {
+        array[length] = elements[el][i];
+        length++;
+      }
+    }
+    // console.log(array);
+  }
+  return array.length;
+};
+
+tests ({
+
+  'It returns the new length of the original array passed in': function() {
+    let expectedArray = [1];
+    let actualArray = push([1], 2, 3, 4);
+    eq(actualArray, 4);
+  },
+
+  'It adds one element to the original array passed in': function() {
+    // debugger;
+    let expectedArray = [1,2];
+    let actualArray = push([1], 2);
+    eq(actualArray, 2);
+  },
+
+  'It adds multiple elements to the original array passed in': function() {
+    // debugger;
+    let expectedArray = [1,2];
+    let actualArray = push([1], 2, [3,4]);
+    eq(actualArray, 4);
+  },
+});
+
+</script>

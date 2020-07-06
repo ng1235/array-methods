@@ -1,0 +1,113 @@
+<script src="../tinytest.js"></script>
+
+<script>
+
+// Prototype Implementation
+  // function join(array, separator) {
+    // let string = ''
+    // for (let i = 0; i  < array.length; i++) {
+    //    string.concat(array[i] + separator);
+    // }
+    // return newArray
+  // }
+
+// Example
+  // const elements = ['Fire', 'Air', 'Water'];
+
+  // console.log(elements.join());
+  // expected output: "Fire,Air,Water"
+
+  // console.log(elements.join(''));
+  // expected output: "FireAirWater"
+
+  // console.log(elements.join('-'));
+  // expected output: "Fire-Air-Water"
+
+// Function Signature
+  // join(array, separator)
+
+// Return Value
+  // A string with all array elements joined
+
+// Requirements:
+  // It no separator, it joins two strings with a comma in between
+  // If separator, it joins two strings with separator in between
+  // If array.length = 0, an empty string is returned
+  // If array.length = 1, that item will be returned without using the separator
+  // If separator is an empty string, it joins all elements with no characters in between
+
+function join (array, separator) {
+
+  let string = '';
+
+  if (!separator && separator !== '') {
+    separator = ',';
+  }
+
+  if (array.length === 0) {
+    return string;
+  } else if (array.length === 1) {
+    return array[0];
+  }
+
+  for (let i = 0; i < array.length; i++) {
+    if (!array[i]) {
+
+      if (i === array.length - 1) {
+      separator = '';
+      }
+      
+      string = string.concat(separator);
+      continue;
+    }
+    if (i === array.length - 1) {
+      separator = '';
+    }
+
+    let elementToJoin = array[i] + separator;
+    string = string.concat(elementToJoin);
+  }
+  return string;
+};
+
+tests ({
+  'It no separator, it joins two strings with a comma in between': function() {
+    // debugger;
+    let expectedString = "Fire,Air,Water"
+    let testString = join(["Fire", "Air", "Water"]);
+    eq(testString, expectedString);
+  },
+
+  'If separator, it joins two strings with separator in between': function() {
+    let expectedString = "Fire-Air-Water"
+    let testString = join(["Fire", "Air", "Water"],'-');
+    eq(testString, expectedString);
+  },
+
+  'If array.length = 0, an empty string is returned': function() {
+    let expectedString = [];
+    let testString = join([],'-');
+    eq(testString, expectedString);
+  },
+
+  'If array.length = 1, that item will be returned without using the separator': function() {
+    let expectedString = "Water"
+    let testString = join(["Water"],'-');
+    eq(testString, expectedString);
+  },
+
+  'If separator is an empty string, it joins all elements with no characters in between': function() {
+    let expectedString = "WaterFireAir";
+    let testString = join(["Water", "Fire", "Air"],'');
+    eq(testString, expectedString);
+  },
+
+  'An element is converted to an empty string if it is undefined, null or an empty array': function() {
+    // debugger;
+    let expectedString = "Water,Fire,";
+    let testString = join(["Water", "Fire", undefined]);
+    eq(testString, expectedString);
+  },
+});
+
+</script>
