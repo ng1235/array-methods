@@ -1,0 +1,75 @@
+<script src="../tinytest.js"> </script>
+
+<script>
+// Prototype Implementation
+  // function pop(array) {
+    // Get last element of array.
+    // Create newArray without the last element
+    // Make array equal to newArray
+    // Return the last element
+  // }
+
+// Example
+  // const plants = ['broccoli', 'cauliflower', 'cabbage', 'kale', 'tomato'];
+
+  // console.log(plants.pop());
+  // expected output: "tomato"
+
+// Function Signature
+  // pop (array)
+
+// Return Value
+  // The removed element from the array - undefined if the array is empty
+
+// Requirements:
+  // It returns the removed element from the array
+  // It removes one element from the array.
+  // It returns undefined if the array is empty.
+
+function pop (array) {
+  let length = array.length;
+  let newArray = [];
+
+  if (array.length === 0) {
+    return undefined;
+  }
+
+  for (let i = 0; i < length; i++) {
+    newArray.push(array[i]);
+  }
+
+  let lastElement = newArray.length - 1;
+  array.length = 0;
+
+  for (let i = 0; i < lastElement; i++) {
+    array.push(newArray[i]);
+  }
+
+  let lastIndex = newArray.length - 1;
+
+  return newArray[lastIndex];
+};
+
+tests ({
+  'It returns the removed element from the array': function() {
+    // debugger;
+    let testArray = [1,2,3,4];
+    let expectedResult = 4;
+    let actualResult = pop(testArray);
+    eq(actualResult, expectedResult);
+  },
+
+  'It removes one element from the original array.': function() {
+    // debugger;
+    let testArray = [1, 2];
+    pop(testArray);
+    eq(testArray, 1);
+  },
+
+  'It returns undefined if the array is empty.': function() {
+    let testResult = pop([]);
+    eq(undefined, testResult);
+  },
+});
+
+</script>
