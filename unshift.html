@@ -25,22 +25,19 @@
 
 function unshift(array, ...elements) {
 
-  // let copyOfArray = [];
+  // Determine how many elements are passed in 
 
-  // function resetArray () {
-  //   copyOfArray.length = 0;
-  //   // Create copy of array
-  //   for (let i = 0; i < array.length; i++) {
-  //     copyOfArray.push(array[i]);
-  //   }
-  // };
+  let lastArgument = elements.length - 1;
+
+  // Shift elements one index to the right
 
   for (let el in elements) {
       for (let i = array.length - 1; i >= 0; i--) {
         array[i+1] = array[i]
       }
       // Add new element into front of array
-      array[0] = elements[el];
+      array[0] = elements[lastArgument];
+      lastArgument--;
   }
   return array.length;
 };
@@ -74,11 +71,25 @@ function areArraysEqual (arrayOne, arrayTwo) {
 };
 
 tests ({
-
-  'It returns the revised length of the array after adding all elements.': function() {
+  'It returns the revised length of the array after adding one element.': function() {
     let testArray = [1,2];
     let actualResult = unshift([1,2], 0);
     eq(actualResult, 3);
+  },
+
+  'It returns the revised length of the array after adding multiple elements': function() {
+    // debugger;
+    let testArray = [1,2];
+    let actualResult = unshift(testArray, -2, -1, 0);
+    eq(actualResult, 5);
+  },
+
+  'It modifies array such that the unshifted values appear in the order they were passed in to the function': function () {
+    // debugger;
+    let testArray = [1,2];
+    unshift(testArray, -2, -1, 0);
+    let result = areArraysEqual(testArray, [-2, -1, 0, 1, 2]);
+    eq(result, true);
   },
 
   'It adds one element to the beginning of the array.': function() {
@@ -93,7 +104,7 @@ tests ({
     // debugger;
     let testArray = [2,3];
     let expectedResult = [[0,1,2],2,3];
-    unshift(testArray, [0,1,2]);
+    unshift(testArray, [0,1,2])
     let result = areArraysEqual(testArray, expectedResult);
     eq(result, true);
   },
