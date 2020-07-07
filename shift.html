@@ -1,0 +1,77 @@
+<script src="../tinytest.js"></script>
+
+<script>
+
+// Prototype Implementation
+  // function shift(array) {
+    // Get first element of array.
+    // Amend array such that first element is removed and length decreases.
+    // Return the last element removed. 
+  // }
+
+// Example
+  // const array1 = [1, 2, 3];
+
+  // const firstElement = array1.shift();
+
+  // console.log(array1);
+  // // expected output: Array [2, 3]
+
+  // console.log(firstElement);
+  // expected output: 1
+
+// Function Signature
+  // shift(array)
+
+// Return Value
+  // The removed element from the array - undefined if the array is empty
+
+// Requirements:
+  // It returns the removed element from the array.
+  // It removes one element from the front of the array.
+  // It returns undefined if the array is empty.
+  // It changes the length of the original array.
+
+function shift(array) {
+  let length = array.length;
+  let newArray = [];
+
+  if (!array) {
+    return undefined;
+  }
+
+  for (let i = 0; i < length; i++) {
+    newArray.push(array[i]);
+  }
+
+  array.length = 0;
+
+  for (let i = 1; i < newArray.length; i++) {
+    array.push(newArray[i]);
+  }
+
+  return newArray[0];
+};
+
+tests ({
+  'It returns the removed element from the array.': function() {
+    let expectedResult = 1;
+    let actualResult = shift([1,2]);
+    eq(expectedResult, actualResult);
+  },
+
+  'It removes one element from the front of the array.': function() {
+    // debugger;
+    let testArray = [1,2];
+    shift(testArray);
+    eq(testArray, 2);
+  },
+
+  'It returns undefined if the array is empty.': function() {
+    let expectedResult = undefined;
+    let actualResult = shift([]);
+    eq(expectedResult, actualResult);
+  },
+});
+
+</script>

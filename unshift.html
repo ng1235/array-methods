@@ -1,0 +1,102 @@
+<script src="../tinytest.js"> </script>
+
+<script>
+
+// Prototype Implementation
+  // function unshift(...elements) {
+    // For el in elements
+      // Add element to the front of the array
+    // Return new length of the array
+  // }
+
+// Example
+  // const array1 = [1, 2, 3];
+
+  // console.log(array1.unshift(4, 5));
+  // expected output: 5
+
+// Return Value
+  // The new array length after adding all elements
+
+// Requirements:
+  // It adds one element to the beginning of the array.
+  // It adds multiple elements to the beginning of the array.
+  // It returns the revised length of the array after adding all elements.
+
+function unshift(array, ...elements) {
+
+  // let copyOfArray = [];
+
+  // function resetArray () {
+  //   copyOfArray.length = 0;
+  //   // Create copy of array
+  //   for (let i = 0; i < array.length; i++) {
+  //     copyOfArray.push(array[i]);
+  //   }
+  // };
+
+  for (let el in elements) {
+      for (let i = array.length - 1; i >= 0; i--) {
+        array[i+1] = array[i]
+      }
+      // Add new element into front of array
+      array[0] = elements[el];
+  }
+  return array.length;
+};
+
+function areArraysEqual (arrayOne, arrayTwo) {
+  let equalElements = 0;
+
+  if (arguments.length < 2) {
+    return false;
+  }
+
+  if (arrayOne.length !== arrayTwo.length) {
+    return false
+  }
+
+  // If the element in the array is a nested array, recursively determine if the nested arrays are equal
+  for (let i = 0; i < arrayOne.length; i++) {
+    if (arrayOne[i].constructor === Array) {
+      if (areArraysEqual(arrayOne[i], arrayTwo[i])) {
+        equalElements++;
+      }
+    }
+    
+    // If the element in the array is a number, check that the value is equal in both arrays
+    if (arrayOne[i] === arrayTwo[i]) {
+      equalElements++;
+    } 
+  }
+
+  return equalElements === arrayOne.length ? true : false;
+};
+
+tests ({
+
+  'It returns the revised length of the array after adding all elements.': function() {
+    let testArray = [1,2];
+    let actualResult = unshift([1,2], 0);
+    eq(actualResult, 3);
+  },
+
+  'It adds one element to the beginning of the array.': function() {
+    // debugger;
+    let testArray = [1,2];
+    unshift(testArray, 0);
+    let result = areArraysEqual(testArray, [0,1,2]);
+    eq(result, true);
+  },
+
+  'It adds multiple elements to the beginning of the array.': function() {
+    // debugger;
+    let testArray = [2,3];
+    let expectedResult = [[0,1,2],2,3];
+    unshift(testArray, [0,1,2]);
+    let result = areArraysEqual(testArray, expectedResult);
+    eq(result, true);
+  },
+});
+
+</script>
