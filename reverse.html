@@ -1,0 +1,69 @@
+<script src="../tinytest.js"></script>
+
+<script>
+
+// Prototype Implementation
+  // function reverse(array) {
+    // make copy of array
+    // set array.length = 0;
+    // push items to array starting from the last index of the new array
+    // delete the copied array from memory
+    // return the modified array
+  // }
+
+// Example
+  // const array1 = [1, 2, 3];
+  // expect [3,2,1];
+
+// Return Value
+  // The modified array
+
+// Requirements:
+  // It reverses an entire array and returns it.
+  // It reverses elements in an array-like object.
+
+function reverse(array) {
+  let copy = Array.prototype.slice.call(array);
+  array.length = 0;
+  lastIndex = copy.length - 1;
+
+  for (let i = lastIndex; i >= 0; i--) {
+    array[lastIndex - i] = (copy[i]);
+  }
+
+  array.length = copy.length;
+  copy = null;
+  return array;
+};
+
+tests ({
+   'It reverses an entire array and returns it.': function() {
+    //  debugger;
+      let expectedResult = [3,2,1];
+      let actualResult = reverse([1,2,3]);
+      eq(actualResult[0], 3);
+      eq(actualResult[1], 2);
+      eq(actualResult[2], 1);
+   },
+
+   'It reverses elements in an array-like object.': function() {
+    //  debugger;
+    const testObject = {0: 1, 1: 2, 2: 3, length: 3};
+    const expectedResult = {0: 3, 1: 2, 2: 1, length: 3};
+    let result = reverse(testObject);
+    // console.log(result);
+    eq(result[0], 3);
+    eq(result[1], 2);
+    eq(result[2], 1);
+    eq(result.length, 3);
+   },
+
+   'The returned array should return a reference to the array passed in': function() {
+    // debugger;
+    let expectedResult = [1,2,3];
+    let actualResult = reverse(expectedResult);
+    eq(expectedResult, actualResult);
+   },
+});
+
+</script>
