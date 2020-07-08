@@ -28,6 +28,10 @@ function reverse(array) {
   lastIndex = copy.length - 1;
 
   for (let i = lastIndex; i >= 0; i--) {
+    // Skip over holes in the array
+    if (!copy[i]) {
+      continue;
+    }
     array[lastIndex - i] = (copy[i]);
   }
 
@@ -64,6 +68,12 @@ tests ({
     let actualResult = reverse(expectedResult);
     eq(expectedResult, actualResult);
    },
+
+   'Any array holes are represented by an empty array element when reversed': function() {
+    let expectedResult = [1,2,,3];
+    let actualResult = reverse(expectedResult)
+    eq(expectedResult[1], undefined); 
+    },
 });
 
 </script>
