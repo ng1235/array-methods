@@ -1,0 +1,155 @@
+<script src="../tinytest.js"></script>
+
+<script>
+
+// Prototype Implementation
+  // function fill(array, value, start, end) {
+      // For array[start],
+      // Fill in array with value until end
+      // Return array
+  // }
+
+// Example
+  // const array1 = [1, 2, 3, 4];
+
+  // fill with 0 from position 2 until position 4
+  // console.log(array1.fill(0, 2, 4));
+  // expected output: [1, 2, 0, 0]
+
+// Return Value
+  // The modified array, filled with value.
+
+// Requirements:
+  // It fills an array.
+  // It fills an array starting from start.
+  // It fills an array until, but not including, end.
+  // If no start, fill begins at array[0].
+  // If not end, fill ends at array[length].
+
+function fill(array, value, startIndex, endIndex) {
+
+  if (isNaN(startIndex) && typeof(startIndex) !== 'undefined' && isNaN(endIndex) && typeof(startIndex) !== 'undefined') {
+    return array;
+  }
+  
+  if (!startIndex) {
+    startIndex = 0;
+  } else if (startIndex < 0) {
+    startIndex = array.length + startIndex;
+  }
+
+  if (!endIndex) {
+    endIndex = array.length;
+  } else if (endIndex < 0) {
+    endIndex = array.length + endIndex;
+  }
+
+  for (let i = startIndex; i < endIndex; i++) {
+    array[i] = value;
+  }
+  return array;
+};
+
+function areArraysEqual (arrayOne, arrayTwo) {
+  let equalElements = 0;
+
+  if (arguments.length < 2) {
+    return false;
+  }
+
+  if (arrayOne.length !== arrayTwo.length) {
+    return false
+  }
+
+  // If the element in the array is a nested array, recursively determine if the nested arrays are equal
+  for (let i = 0; i < arrayOne.length; i++) {
+    if (arrayOne[i].constructor === Array) {
+      if (areArraysEqual(arrayOne[i], arrayTwo[i])) {
+        equalElements++;
+      }
+    }
+    
+    // If the element in the array is a number, check that the value is equal in both arrays
+    if (arrayOne[i] === arrayTwo[i]) {
+      equalElements++;
+    } 
+  }
+
+  return equalElements === arrayOne.length ? true : false;
+};
+
+
+tests ({
+  'It fills an array and returns it.': function() {
+    // debugger;
+    let expectedResult = [0,0,0];
+    let actualResult = fill([1,2,3], 0);
+    let result = areArraysEqual(actualResult, expectedResult);
+    eq(result, true);
+  },
+
+  'It fills an array starting from start.': function() {
+    let expectedResult = [1,0,0];
+    let actualResult = fill([1,2,3], 0, 1);
+    let result = areArraysEqual(actualResult, expectedResult);
+    eq(result, true);
+  },
+
+  'It fills an array until, but not including, end.': function() {
+    let expectedResult = [0,0,3];
+    let actualResult = fill([1,2,3], 0, 0, 2);
+    let result = areArraysEqual(actualResult, expectedResult);
+    eq(result, true); 
+  },
+
+  'If no start, fill begins at array[0].': function() {
+    let expectedResult = [0,0,0];
+    let actualResult = fill([1,2,3], 0, undefined, 3);
+    let result = areArraysEqual(actualResult, expectedResult);
+    eq(result, true); 
+  },
+
+  'If not end, fill ends at array[length].': function() {
+    let expectedResult = [1,0,0];
+    let actualResult = fill([1,2,3], 0, 1, undefined);
+    let result = areArraysEqual(actualResult, expectedResult);
+    eq(result, true); 
+  },
+
+  'If start > 0, fill begins at array.length + start': function() {
+    let expectedResult = [1,2,0];
+    let actualResult = fill([1,2,3], 0, -1, undefined);
+    let result = areArraysEqual(actualResult, expectedResult);
+    eq(result, true); 
+  },
+
+  'If start < 0, fill begins at array.length + end': function() {
+    let expectedResult = [0,2,3];
+    let actualResult = fill([1,2,3], 0, undefined, -2);
+    let result = areArraysEqual(actualResult, expectedResult);
+    eq(result, true); 
+  },
+
+  'If start and end === NaN, the array is returned unmodified': function() {
+    // debugger;
+    let expectedResult = [1,2,3];
+    let actualResult = fill([1,2,3], 0, NaN, NaN);
+    let result = areArraysEqual(actualResult, expectedResult);
+    eq(result, true); 
+  },
+
+  'It should copy the reference and fill the array with references to an object.': function() {
+    let result = fill(Array(3), {});
+    result[0].hi = "hi";
+    eq(result[1].hi, result[2].hi);
+  },
+
+  'It should work for an array-like object.': function () {
+      var result = fill({length: 3}, 4);//[].fill.call({ length: 3 }, 4); 
+      eq(typeof result, "object");
+      eq(result[0], 4);
+      eq(result[1], 4);
+      eq(result[2], 4);
+    }
+});
+</script>
