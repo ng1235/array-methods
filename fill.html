@@ -145,11 +145,11 @@ tests ({
   },
 
   'It should work for an array-like object.': function () {
-      var result = fill({length: 3}, 4);//[].fill.call({ length: 3 }, 4); 
+      var result = fill({length: 3}, 4);// = [].fill.call({ length: 3 }, 4); 
       eq(typeof result, "object");
       eq(result[0], 4);
       eq(result[1], 4);
       eq(result[2], 4);
-    }
+    },
 });
 </script>
