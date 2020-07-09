@@ -1,0 +1,191 @@
+<script src="../tinytest.js"> </script>
+
+<script>
+
+// Prototype Implementation
+  // function copyWithin () {
+    // Get the array elements to copy.
+    // Identify the target element to copy to.
+    // Replace the array element / s with the array elements copied.
+    // Return the array.
+  // }
+
+// Example
+  // const array1 = ['a', 'b', 'c', 'd', 'e'];
+  // copy to index 0 the element at index 3
+  // console.log(array1.copyWithin(0, 3, 4));
+  // expected output: Array ["d", "b", "c", "d", "e"]
+
+// Return Value
+    // The modified array.
+
+// Requirements:
+  // It returns the modified array.
+  // It does not change the array's length.
+  // If target > 0, copy selects from index array[target].
+  // If target < 0, copy selects from index array.length + target.
+  // If target >= array.length, nothing will be copied.
+  // If target is positioned after startIndex, the copied sequence will be trimmed to fit array.length.
+  // If startIndex < 0, startIndex begins from array.length + startIndex.
+  // If startIndex > 0, startIndex begins from array[startIndex].
+  // If startIndex is omitted, copyWithin will copy from index 0.
+  // If endIndex > 0, it copies up to but not including array[endIndex].
+  // If endIndex < 0, it copies up to but not including array[array.length + endIndex].
+  // If no endIndex, it copies until the end of the array.
+
+
+function copyWithin(array, target, startIndex, endIndex) {
+  let copyOfArray = Array.prototype.slice.call(array);
+  let lastIndex = array.length - 1;
+
+  if (target > array.length) {
+    return array;
+  }
+
+  if (target < 0) {
+    target = array.length + target; 
+  }
+
+  let targetElement = target;
+
+  if (startIndex < 0) {
+    startIndex = array.length + startIndex;
+  } else if (!startIndex) {
+    startIndex = 0;
+  }
+
+  if (endIndex < 0) {
+    endIndex = array.length + endIndex;
+  } else if (!endIndex) {
+    endIndex = array.length;
+  }
+
+  for (let i = startIndex; i < endIndex; i++) {
+    if (targetElement < copyOfArray.length) {
+      array[targetElement] = copyOfArray[i];
+      targetElement++;
+    }
+  }
+  return array;
+}
+
+tests ({
+  '1. It returns the modified array.': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    let actualResult = copyWithin(testArray, 0, 2);
+    eq(actualResult[0], 3);
+    eq(actualResult[1], 2);
+    eq(actualResult[2], 3);
+  },
+
+  '2. It does not change the length of the array.': function() {
+    // debugger;
+    let testArray = [1,2,3,4,5];
+    let expectedResult = testArray.length;
+    let editedArray = copyWithin(testArray, -2);
+    let actualResult = editedArray.length;
+    eq(actualResult, expectedResult);
+  },
+
+  '3. If target > 0, the element to copy is index array[target].': function() {
+    let testArray = [1,2,3];
+    let actualResult = copyWithin(testArray, 0, 2);
+    eq(actualResult[0], 3);
+  },
+
+  '4. If target < 0, the element to copy is array[array.length + target].': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    let actualResult = copyWithin(testArray, -2, 2);
+    eq(actualResult[0], 1);
+    eq(actualResult[1], 3);
+    eq(actualResult[2], 3);
+  },
+
+  '5. If target >= array.length, nothing will be copied.': function() {
+    let testArray = [1,2,3];
+    let actualResult = copyWithin(testArray, 4, 2);
+    eq(actualResult[0], 1);
+    eq(actualResult[1], 2);
+    eq(actualResult[2], 3);
+  },
+
+  '6. If target is positioned after startIndex, the copied sequence will be trimmed to fit array.length.': function() {
+    // debugger;
+    var numArray = [12, 13, 14, 15, 16, 17]
+    let actualResult = copyWithin(numArray, 3, 1, 5);
+    eq(numArray[0], 12);
+    eq(numArray[1], 13);
+    eq(numArray[2], 14);
+    eq(numArray[3], 13);
+    eq(numArray[4], 14);
+    eq(numArray[5], 15);
+  },
+
+  '7. If startIndex < 0, startIndex begins from array.length + startIndex.': function() {
+    let testArray = [1,2,3];
+    let actualResult = copyWithin(testArray, 0, -2);
+    eq(actualResult[0], 2);
+  },
+
+  '8. If startIndex > 0, startIndex begins from array[startIndex].': function() {
+    let testArray = [1,2,3];
+    let actualResult = copyWithin(testArray, 0, 2);
+    eq(actualResult[0], 3);
+  },
+
+  '9. If startIndex is omitted, the copy begins from index 0.': function() {
+    let testArray = [1,2,3];
+    let actualResult = copyWithin(testArray, 1, undefined);
+    eq(actualResult[1], 1);
+  },
+
+  'If endIndex > 0, it copies up to but not including array[endIndex].': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    let actualResult = copyWithin(testArray, 0, 1, 2);
+    eq(actualResult[0], 2);
+    eq(actualResult[1], 2);
+    eq(actualResult[2], 3);
+  },
+
+  '10. If endIndex < 0, it copies up to but not including array[array.length + endIndex].': function() {
+    let testArray = [1,2,3,4,5];
+    let actualResult = copyWithin(testArray, 0, 3, -1);
+    eq(actualResult[0], 4);
+    eq(actualResult[1], 2);
+    eq(actualResult[2], 3);
+    eq(actualResult[3], 4);
+    eq(actualResult[4], 5);
+  },
+
+  '11. If no endIndex, it copies until the end of the array.': function() {
+    let testArray = [1,2,3];
+    let actualResult = copyWithin(testArray, 0, 1, undefined);
+    eq(actualResult[0], 2);
+    eq(actualResult[1], 3);
+    eq(actualResult[2], 3);
+  },
+
+  '12. It copies multiple elements from the array, from array[startIndex] to array[endIndex - 1]': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    let actualResult = copyWithin(testArray, 0, 1, 3);
+    eq(actualResult[0], 2);
+    eq(actualResult[1], 3);
+    eq(actualResult[2], 3);
+  },
+
+  '13. It should work for an array-like object.': function () {
+    let result = copyWithin({length: 5, 3: 1}, 0, 3) // [].copyWithin.call({length: 5, 3: 1}, 0, 3) - see MDN documentation.
+    eq(typeof result, 'object');
+    eq(result[0], 1)
+    eq(result[3], 1)
+    eq(result.length, 5);
+    // {0: 1, 3: 1, length: 5}  
+
+  },
+});
+
+</script>
