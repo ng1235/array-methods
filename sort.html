@@ -1,0 +1,363 @@
+<script src="../tinytest.js"></script>
+
+<script>
+
+// Prototype Implementation
+  // function sort (array, compareFunction) {
+    // Execute the compareFunction
+    // Sort all non-undefined values by the return value of the compareFunction
+    // Return the array
+  // }
+
+// Example
+  // const months = ['March', 'Jan', 'Feb', 'Dec'];
+  // months.sort();
+  // console.log(months);
+  // expected output: Array ["Dec", "Feb", "Jan", "March"]
+
+  // const array1 = [1, 30, 4, 21, 100000];
+  // array1.sort();
+  // console.log(array1);
+  // expected output: Array [1, 100000, 21, 30, 4]
+
+// Return Value
+    // The sorted array.
+
+// Requirements:
+    // 1. If not compareFunction, it converts all elements to strings.
+    // 2. If not compareFunction, it sorts the array by UTF-16 code units order.
+    // 3. If compareFunction, it sorts the array by the return value of compareFunction.
+    // 4. If compareFunction, it sorts the array in numerical order.
+    // 5. It sorts undefined elements to the end of the array.
+    // 6. It sorts non ASCII characters.
+
+
+// HELPER FUNCTIONS // 
+
+function changeArrayToStrings(array) {
+
+  for (let i = 0; i < array.length; i++) {
+    if (typeof array[i] === 'string' || !array[i]) {
+      continue;
+    }
+    let el = array[i];
+    stringElement = el.toString();
+    array[i] = stringElement;
+  }
+  // console.log(array);
+  return array;
+};
+
+function compareStrings(a, b) {
+  // Compares a UTF-16 character in the string and returns an index dependant on b's character code relative to a's
+
+  if (!a || !b) {
+    return undefined;
+  }
+
+  let charsInA = a.split('');
+  let charsInB = b.split('');
+
+  for (let i = 0; i < a.length; i++) {
+
+    if (charsInA[i].charCodeAt() - charsInB[i].charCodeAt() < 0) {
+    return - 1;
+    } else if (charsInA[i].charCodeAt() - charsInB[i].charCodeAt() > 0) {
+    return 1;
+    } else {
+    continue;
+    }
+    // Return -1 if string A === string B for the length of string A (i.e. if car vs cars --> return -1 and do not swap indexes)
+    return -1;
+  }
+}
+
+function compareNumbers (a, b) {
+
+  if (!a) {
+    return undefined;
+  }
+  
+  if (a - b < 0) {
+    return - 1;
+  } else if (a - b > 0) {
+    return 1;
+  } else {
+    return 0;
+  }
+};
+
+// SORT FUNCTION //
+
+function sort(array, compareFunction) {
+
+  let nonEmptyArrayElements = array.filter(Boolean).length;
+  let falsyElements = array.length - nonEmptyArrayElements;
+
+  let sortedElements = 0;
+  // Compare indexes and swap them according to the compareFunction
+  let numberOfTimesSwapIndexesRun = 0;
+
+  function swapIndexes(array) {
+    let originalArray = Array.prototype.slice.call(array);
+    sortedElements = 0;
+    let indexOffset = 1;
+
+    for (let i = 0; i < array.length - 1; i++) {
+      
+      let result = compareFunction(array[i], array[i+1]);
+      // console.log(result);
+      // Place all falsy values at back of array, swapping them with current array values.
+      if (result === undefined && indexOffset <= falsyElements) {
+        for (let i = 0; i < array.length; i++) {
+          if (!array[i] && i < array.length - indexOffset) {
+            let copyOfArray = Array.prototype.slice.call(array);
+            array[array.length - indexOffset] = array[i]; 
+            array[i] = copyOfArray[array.length-indexOffset];
+            indexOffset++;
+          }
+        }
+      numberOfTimesSwapIndexesRun++;
+      if (numberOfTimesSwapIndexesRun <= 1) {
+        sortedElements = 0;
+        swapIndexes(array);      
+      }
+    }
+
+      if (result > 0) {
+        let copyOfArray = Array.prototype.slice.call(array);
+        array[i+result] = array[i];
+        array[i] = copyOfArray[i+result];
+      } else {
+        sortedElements ++;
+      }
+    }
+
+    for (let i = 0; i < array.length; i++) {
+      for (let j = 0; j < array.length; j++) {
+        if (typeof array[i] !== typeof originalArray[j] && array[i] == originalArray[j]) {
+          array[i] = parseInt(array[i]);
+        }
+      }
+    }
+  }
+
+  function sortStringIndexes (array) {
+    let originalArray = Array.prototype.slice.call(array);
+    sortedElements = 0;
+    let indexOffset = 1;
+    let result;
+    changeArrayToStrings(array);
+
+    for (let i = 0; i < array.length - 1; i++) {
+      let indexOffset = 1;
+        result = compareStrings(array[i], array[i+1]);
+      
+      if (result === undefined && indexOffset <= falsyElements) {
+        for (let i = 0; i < array.length; i++) {
+          if (!array[i] && i < array.length - indexOffset) {
+            let copyOfArray = Array.prototype.slice.call(array);
+            array[array.length - indexOffset] = array[i]; 
+            array[i] = copyOfArray[array.length-indexOffset];
+            indexOffset++;
+          }
+        }
+        numberOfTimesSwapIndexesRun++;
+        if (numberOfTimesSwapIndexesRun <= 1) {
+          sortedElements = 0;
+          sortStringIndexes(array);      
+        }
+      }
+
+      if (result > 0) {
+        let copyOfStringArray = Array.prototype.slice.call(array);
+        array[i+result] = array[i];
+        array[i] = copyOfStringArray[i+result];
+      } else {
+        sortedElements ++;
+      }
+    }
+    // Change each element to their original primitave values
+    for (let i = 0; i < array.length; i++) {
+      for (let j = 0; j < array.length; j++) {
+        if (typeof array[i] !== typeof originalArray[j] && array[i] == originalArray[j]) {
+          array[i] = parseInt(array[i]);
+        }
+      }
+    }
+  }
+
+  // Continue swapping array indexes until all are sorted
+  sortedElements = 0;
+  while (sortedElements + 1 !== array.length) {
+    if (!compareFunction) {
+      sortStringIndexes(array);
+    } else {
+      swapIndexes(array);
+    }
+  }
+  // console.log(array);
+  return array;
+};
+
+tests ({
+  '1. If not compareFunction, it converts all elements to strings.': function() {
+    var numbers = [1,2,3];
+    sort(numbers);
+    eq(numbers[0], "1");
+    eq(numbers[1], "2");
+    eq(numbers[2], "3");
+  },
+
+  '2. If not compareFunction, it sorts the array by UTF-16 code units order.': function() {
+    // debugger;
+    const months = ['Jan', 'Feb', 'Mar'];
+    sort(months);
+    eq(months[0], 'Feb');
+    eq(months[1], 'Jan');
+    eq(months[2], 'Mar');
+  },
+
+  '3. If compareFunction, it sorts the array by the return value of compareFunction.': function() {
+    // debugger;
+    var numbers = [2,3,1];
+    sort(numbers, compareNumbers);
+    eq(numbers[0], 1);
+    eq(numbers[1], 2);
+    eq(numbers[2], 3);
+  },
+
+  '4. If compareFunction, it sorts undefined elements to the end of the array.': function() {
+    // debugger;
+    var numbers = [,1,,2];
+    sort(numbers, compareNumbers);
+    eq(numbers[0], 1);
+    eq(numbers[1], 2);
+    eq(numbers[2], undefined);
+    eq(numbers[3], undefined);
+    eq(numbers[4], undefined);
+  },
+
+  '5. If no compareFunction, it sorts undefined elements to the end of the array.': function() {
+    // debugger;
+    var numbers = [,1,,2];
+    sort(numbers);
+    eq(numbers[0], 1);
+    eq(numbers[1], 2);
+    eq(numbers[2], undefined);
+    eq(numbers[3], undefined);
+    eq(numbers[4], undefined);
+  },
+
+  '6. It sorts a numeric string array with a compareFunction': function() {
+    var numericStringArray = ['80', '9', '700'];
+    sort(numericStringArray, compareNumbers);
+    eq(numericStringArray[0], 9);
+    eq(numericStringArray[1], 80);
+    eq(numericStringArray[2], 700);
+  },
+
+  '7. It sorts a numeric string array without a compareFunction': function() {
+    var numericStringArray = ['80', '9', '700'];
+    sort(numericStringArray);
+    eq(numericStringArray[0], 700);
+    eq(numericStringArray[1], 80);
+    eq(numericStringArray[2], 9);
+  },
+
+  '8. It sorts a numberArray with a compareFunction': function() {
+    var numberArray = [3,2,1];
+    sort(numberArray, compareNumbers);
+    eq(numberArray[0], 1)
+    eq(numberArray[1], 2)
+    eq(numberArray[2], 3)
+  },
+
+  '9. It sorts a numberArray without a compareFunction': function() {
+    var numberArray = [3,2,1];
+    sort(numberArray);
+    eq(numberArray[0], 1)
+    eq(numberArray[1], 2)
+    eq(numberArray[2], 3)
+  },
+
+  '10. It sorts a mixedNumericArray with a compareFunction': function() {
+    var numberArray = [3,2,1];
+    sort(numberArray);
+    eq(numberArray[0], 1)
+    eq(numberArray[1], 2)
+    eq(numberArray[2], 3)
+  },
+
+  '10. It sorts a mixedNumericArray without a compareFunction': function() {
+    var mixedNumericArray = ['80', '9', '700', 40, 1, 5, 200];
+    sort(mixedNumericArray);
+    eq(mixedNumericArray[0], 1);
+    eq(mixedNumericArray[1], 200);
+    eq(mixedNumericArray[2], 40);
+    eq(mixedNumericArray[3], 5);
+    eq(mixedNumericArray[4], 700);
+    eq(mixedNumericArray[5], 80);
+    eq(mixedNumericArray[6], 9);
+  },
+
+  '11. It sorts a mixedNumericArray with a compareFunction': function() {
+    var mixedNumericArray = ['80', '9', '700', 40, 1, 5, 200];
+    sort(mixedNumericArray, compareNumbers);
+    eq(mixedNumericArray[0], 1);
+    eq(mixedNumericArray[1], 5);
+    eq(mixedNumericArray[2], 9);
+    eq(mixedNumericArray[3], 40);
+    eq(mixedNumericArray[4], 80);
+    eq(mixedNumericArray[5], 200);
+    eq(mixedNumericArray[6], 700);
+  },
+
+  '12. It sorts a mixedNumericArray without a compareFunction': function() {
+    var mixedNumericArray = ['80', '9', '700', 40, 1, 5, 200];
+    sort(mixedNumericArray);
+    eq(mixedNumericArray[0], 1);
+    eq(mixedNumericArray[1], 200);
+    eq(mixedNumericArray[2], 40);
+    eq(mixedNumericArray[3], 5);
+    eq(mixedNumericArray[4], 700);
+    eq(mixedNumericArray[5], 80);
+    eq(mixedNumericArray[6], 9);
+  },
+
+  '13. The sorted array elements retain their original primitive value.': function() {
+    // debugger;
+    var mixedNumericArray = ['5', 1, '3'];
+    sort(mixedNumericArray);
+    eq(typeof(mixedNumericArray[0]), 'number');
+    eq(typeof(mixedNumericArray[1]), 'string');
+    eq(typeof(mixedNumericArray[2]), 'string');
+  },
+
+  '14. It can sort objects by their properties.': function() {
+    // debugger;
+    var items = [
+      { name: 'Edward', value: 21 },
+      { name: 'Sharpe', value: 37 },
+      { name: 'And', value: 45 },
+      { name: 'The', value: -12 },
+      { name: 'Magnetic', value: 13 },
+      { name: 'Zeros', value: 37 }
+    ];
+    sort(items, function(a, b) {
+      if (a.value - b.value < 0) {
+        return -1;
+      } else if (a.value - b.value > 0) {
+        return 1;
+      };
+    })
+    eq(items[0].value, -12);
+    eq(items[1].value, 13);
+    eq(items[2].value, 21);
+    eq(items[3].value, 37);
+    eq(items[4].value, 37);
+    eq(items[5].value, 45);
+  },
+});
+
+</script>
