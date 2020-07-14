@@ -1,0 +1,296 @@
+<script src="../tinytest.js"></script>
+<script>
+
+// Prototype Implementation
+
+  // Splice changes the contents of an array by removing or replacing existing elements, and / or adding new elements.
+
+  // function splice(array, startIndex, deleteCount, ...elements) {
+    // Create a new array to store deleted elements
+    // Modify array such that ...elements are placed into the array (and potentially modifying existing elements as specified by startIndex and deleteCount) 
+    // Return the new array of deleted elements
+  // }
+
+// Example
+  // const months = ['Jan', 'March', 'April', 'June'];
+  // months.splice(1, 0, 'Feb');
+  // inserts at index 1
+  // console.log(months);
+  // expected output: Array ["Jan", "Feb", "March", "April", "June"]
+
+  // months.splice(4, 1, 'May');
+  // replaces 1 element at index 4
+  // console.log(months);
+  // expected output: Array ["Jan", "Feb", "March", "April", "May"]
+
+// Return Value
+  // An array containing the deleted elements.
+  // If only one element is removed, an array of one element is returned.
+  // If no elements are removed, an empty array is returned.
+
+// Requirements:
+    // 1. If startIndex > array.length, startIndex will be set to the length of the array.
+    // 2. If startIndex < array.length, startIndex will be set to array[length + startIndex].
+    // 3. If array.length + startIndex < 0, startIndex will be set to index 0.
+    // 4. If no deleteCount or deleteCount > array.length, all elements from startIndex to the end of the array will be deleted.
+    // 5. It inserts one element into the array at the specified index.
+    // 6. It inserts multiple elements in to the array at the specified index.
+    // 7. If no elements, it only removes elements from an array.
+    // 8. It returns an array containing the deleted elements.
+    // 9. If only one element is removed, an array of one element is returned.
+    // 10. If no elements are removed, an empty array is returned.
+
+function splice (array, startIndex, deleteCount, ...elements) {
+  let originalArray = Array.prototype.slice.call(array);
+  let elementsLength = 0;
+  let deletedElements = [];
+  let indexIncrement = 0;
+
+  // Get the number of elements entered by the user
+  for (element in elements) {
+    elementsLength++;
+  }
+  // Set startIndex 
+  if (startIndex > array.length) {
+    startIndex = array.length;
+  } else if (startIndex < 0 && startIndex + array.length < 0) {
+    startIndex = 0;
+  } else if (startIndex < 0) {
+    startIndex = array.length + startIndex;
+  }
+
+  // If no deleteCount, remove all elements from startIndex
+  if (!deleteCount && deleteCount !== 0) {
+    for (let i = startIndex; i < array.length; i++) {
+      deletedElements.push(array[i]);
+    }
+    deleteCount = 0;
+  } else if (array.length - startIndex < deleteCount) {
+    deleteCount = array.length - startIndex;
+  }
+
+
+
+  for (let i = 0; i < array.length; i++) {
+  // Shift elements to the right by the # elements passed in
+    if (i === startIndex) {
+      // Create space in array for new elements
+      for (let j = startIndex; j < originalArray.length; j++) {
+
+      // Push array elements to the right by elementsLength
+        if (!deleteCount) {
+          array[j+elementsLength] = originalArray[j];     
+        } else {
+          if (elementsLength > 0) {
+            array[j+elementsLength] = originalArray[j+elementsLength-(elementsLength-deleteCount)];  
+          } else {
+            array[j+elementsLength] = originalArray[j+elementsLength];              
+          }
+        }
+      }
+
+      // Add elements to the array starting at startIndex
+      for (let k = startIndex; k < originalArray.length ; k++) {
+        if (k >= startIndex && k < startIndex + deleteCount) {
+          deletedElements.push(array[k]);
+        }
+        if (elements[indexIncrement]) {
+          array[k] = elements[indexIncrement];
+          indexIncrement++;
+        }
+      }
+
+    } else if (startIndex === array.length) {
+      // Push to end of array
+      array[startIndex] = elements[indexIncrement];
+    }
+  }
+
+  if (!deleteCount && elementsLength === 0) {
+    for (let i = startIndex; i <= array.length; i++) {
+      array.pop();
+    }
+  }
+
+  // Remove selected indexes from array.
+  let modifiedArray = Array.prototype.slice.call(array);
+
+  if (deleteCount > 0) {
+    for (let i = startIndex; i <= startIndex + deleteCount; i++) {
+      if (array.length == originalArray.length) {
+        array[i] = modifiedArray[i+deleteCount];
+      }
+    }
+    array.length = array.length - deleteCount;
+  } 
+  // console.log("AFTER:" + array);
+  return deletedElements;
+};  
+
+tests ({
+  '1. It inserts one element into the array at the specified index.': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    splice(testArray, 1, undefined, 5);
+    eq(testArray[0], 1);
+    eq(testArray[1], 5);
+    eq(testArray[2], 2);
+    eq(testArray[3], 3);
+  },
+
+  '2. It inserts multiple elements in to the array at the specified index.': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    splice(testArray, 1, undefined, 5,6);
+    eq(testArray[0], 1);
+    eq(testArray[1], 5);
+    eq(testArray[2], 6);
+    eq(testArray[3], 2);
+    eq(testArray[4], 3);
+  },
+
+  '3. If startIndex > array.length, startIndex will be set to the length of the array.': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    splice(testArray, 4, undefined, 4);
+    eq(testArray[0], 1);
+    eq(testArray[1], 2);
+    eq(testArray[2], 3);
+    eq(testArray[3], 4);
+  },
+
+  '4. If startIndex < 0, startIndex will be set to array[length + startIndex].': function() {
+    let testArray = [1,2,3];
+    splice(testArray, -1, undefined, 4);
+    eq(testArray[0], 1);
+    eq(testArray[1], 2);
+    eq(testArray[2], 4);
+    eq(testArray[3], 3);
+  },
+
+  '5. If startIndex < 0 and array.length + startIndex < 0, startIndex will be set to index 0.': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    splice(testArray, -4, undefined, 4);
+    eq(testArray[0], 4);
+    eq(testArray[1], 1);
+    eq(testArray[2], 2);
+    eq(testArray[3], 3);
+  },
+
+  '6. If deleteCount <= 0, no elements will be removed.': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    let newArray = splice(testArray,0,0,1);
+    eq(testArray[0], 1);
+    eq(testArray[1], 1);
+    eq(testArray[2], 2);
+    eq(testArray[3], 3);
+  },
+
+  '7. If deleteCount > array.length - startIndex, it removes all elements from startIndex to the end of the array.': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    let newArray = splice(testArray, 2, 3, 1); // Remove three elements from index two and insert 1
+    eq(testArray[0], 1);
+    eq(testArray[1], 2);
+    eq(testArray[2], 1);
+    eq(newArray, 3);
+  },
+
+  '8. It returns an array containing the deleted elements.': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    let newArray = splice(testArray, 0, 2); // Remove two elements from index 0
+    eq(newArray[0], 1);
+    eq(newArray[1], 2);
+   },
+
+  '9. If deleteCount > 0, it removes deleteCount elements from the array.': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    let newArray = splice(testArray, 2, 1, 1); // Remove one element starting from index 2 and replace it with 1
+    eq(testArray[0], 1);
+    eq(testArray[1], 2);
+    eq(testArray[2], 1);
+    eq(newArray[0], 3)
+  },
+
+  '10. It returns specific deleted elements.': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    let newArray = splice(testArray, 1, 1); // Remove one element from index 1
+    eq(newArray[0], 2);
+   },
+
+  '11. If no elements are removed, an empty array is returned.': function() {
+    let testArray = [1,2,3];
+    let newArray = splice(testArray, 0, 0); // Remove one element from index 1
+    eq(newArray[0], undefined);
+   },
+
+  '12. It removes deleted elements from the original array.': function() {
+    // debugger;
+    let testArray = [1,2,3];
+    let newArray = splice(testArray, 0, 1); // Remove one element from index 0;
+    eq(testArray[0], 2);
+    eq(testArray[1], 3);
+   },
+
+   '13. If no elements, it only removes elements from an array.': function() {
+    // debugger;
+    let testArray = [1,2,3,4];
+    let newArray = splice(testArray, 0, 2);
+    eq(newArray[0], 1);
+    eq(newArray[1], 2);
+    eq(testArray[0], 3);
+    eq(testArray[1], 4);
+   },
+
+  '14. If only one element is removed, an array of one element is returned.': function() {
+    let testArray = [1,2,3,4];
+    let newArray = splice(testArray, 1, 1);
+    eq(newArray.length, 1)
+    eq(newArray[0], 2);
+    eq(testArray[0],1);
+    eq(testArray[1],3);
+    eq(testArray[2],4);
+   },
+
+   '15. It can remove one element and insert another in its place.': function() {
+    // debugger;
+    let myFish = ['angel', 'clown', 'drum', 'sturgeon']
+    let removed = splice(myFish, 2, 1, 'trumpet');
+    eq(myFish[0], 'angel');
+    eq(myFish[1], 'clown');
+    eq(myFish[2], 'trumpet');
+    eq(myFish[3], 'sturgeon');
+  },
+
+  '16. It can add multiple elements ': function() {
+    // debugger;
+    let myFish = ['angel', 'clown', 'trumpet', 'sturgeon'];
+    let removed = splice(myFish, 0, 2, 'parrot', 'anemone', 'blue')
+    eq(myFish[0], 'parrot');
+    eq(myFish[1], 'anemone');
+    eq(myFish[2], 'blue');
+    eq(myFish[3], 'trumpet');
+    eq(myFish[4], 'sturgeon');
+    eq(myFish.length, 5);
+  },
+
+   '17. If no deleteCount, it removes all elements after startIndex': function() {
+    //  debugger;
+    let myFish = ['angel', 'clown', 'mandarin', 'sturgeon']
+    let removed = splice(myFish, 2);
+    eq(myFish[0], 'angel');
+    eq(myFish[1], 'clown');
+    eq(myFish.length, 2);
+    eq(removed[0], 'mandarin');
+    eq(removed[1], 'sturgeon');
+  },
+
+
+});
+
+</script>
